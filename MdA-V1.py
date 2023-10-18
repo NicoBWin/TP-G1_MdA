@@ -19,7 +19,7 @@ def calculate_angle(a,b,c):
     return angle
 
 # Video Capture source (If 0 -> computer camera)
-cap = cv2.VideoCapture('OneServe.mp4')
+cap = cv2.VideoCapture('OneServe2.mp4')
 
 # Curl counter variables
 counter = 0 

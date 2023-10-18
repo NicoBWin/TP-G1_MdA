@@ -25,7 +25,7 @@ def calculate_angle(a,b,c):
     return angle
 
 # Video Capture source (If 0 -> computer camera)
-cap = cv2.VideoCapture('OneServe.mp4')
+cap = cv2.VideoCapture('OneServe3.mp4')
 
 # Curl counter variables
 counter = 0 
@@ -39,7 +39,7 @@ right_leg_angle_time = []
 time = []
 
 ## Setup mediapipe instance
-with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+with mp_pose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6) as pose:
     while cap.isOpened():
         try:
             ret, frame = cap.read()
@@ -93,11 +93,6 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 time.append(0)
             else:
                 time.append(max(time)+1)
-            # Visualize angle
-            cv2.putText(image, str(left_arm_angle), 
-                           tuple(np.multiply(left_elbow, [640, 480]).astype(int)), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
-                                )
             
             # Curl counter logic
             if left_arm_angle > 160:
@@ -162,7 +157,7 @@ plt.grid(True)
 plt.show()
 
 # Create the second graph, smoothed
-window_size = 7
+window_size = 10
 plt.figure(figsize=(10, 6))
 plt.plot(time, moving_avg(left_arm_angle_time, window_size), label='Left Arm Angle', color='blue')
 plt.plot(time, moving_avg(right_arm_angle_time, window_size), label='Right Arm Angle', color='green')
