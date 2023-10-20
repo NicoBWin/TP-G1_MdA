@@ -5,10 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 
 ## Variables for angle graphs
-left_arm_angle_time = []
-right_arm_angle_time = []
-left_leg_angle_time = []
-right_leg_angle_time = []
+Variable_1 = []
+Variable_2 = []
+Variable_3 = []
 time = []
 
 def moving_avg(data, window_size):
@@ -16,28 +15,27 @@ def moving_avg(data, window_size):
     return np.convolve(data, kernel, mode='same')
 
 
-# Store Data for the subplots
-data_lists = [left_arm_angle_time, right_arm_angle_time, left_leg_angle_time, left_leg_angle_time]
-data_labels = ['Left Arm Angle', 'Right Arm Angle', 'Left Leg Angle', 'Overall Accuracy']
+# Read data for the subplots
+data_lists = [Variable_1, Variable_2, Variable_3]
+data_labels = ['Left Arm Angle', 'Right Hand Track', 'Other']
+df = pd.read_csv('Data.csv')
+time = df.iloc[:,0]
+for i in range(3):
+    data_lists[i] = df.iloc[:,i+1]
 
-dfR = pd.read_csv('Data.csv')
-time = dfR.iloc[:,0]
-for i in range(4):
-    data_lists[i] = dfR.iloc[:,i+1]
 
 window_size = 10
 # Create the third graph with a 2x2 layout
 fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 6))
-
 colors = ['blue', 'green', 'red', 'purple']
-# Loop through the subplots and plot each data list
-for i, ax in enumerate(axes.flatten()):
-    ax.plot(time, data_lists[i], linestyle='--', color=colors[i], label=data_labels[i])
-    ax.plot(time, moving_avg(data_lists[i], window_size), color=colors[i], label="Smoothed"+data_labels[i])
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Angle')
-    ax.set_title(data_labels[i])
-    ax.grid(True)
+
+
+axes[0, 0].plot(time, moving_avg(data_lists[0], window_size), color=colors[0], label="Smoothed"+data_labels[0])
+axes[0, 0].set_title('Axis [0, 0]')
+axes[0, 1].plot(time, moving_avg(data_lists[1], window_size), color=colors[1], label="Smoothed"+data_labels[1])
+axes[0, 1].set_title('Axis [0, 1]')
+axes[1, 0].plot(time, moving_avg(data_lists[2], window_size), color=colors[2], label="Smoothed"+data_labels[2])
+axes[1, 0].set_title('Axis [1, 0]')
 
 # Adjust layout
 plt.tight_layout()

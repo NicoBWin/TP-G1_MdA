@@ -139,6 +139,12 @@ with mp_pose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6) as 
     cap.release()
     cv2.destroyAllWindows()
 
+# Store Data for the subplots
+data_lists = [left_arm_angle_time, right_arm_angle_time, left_leg_angle_time, right_leg_angle_time]
+data_labels = ['Left Arm Angle', 'Right Arm Angle', 'Left Leg Angle', 'Right Leg Angle']
+dfW = pd.DataFrame(dict(zip(data_labels, data_lists))) # create pandas dataframe
+dfW.to_csv('Data.csv')
+
 # Create the first graph
 plt.figure(figsize=(10, 6))
 plt.plot(time, left_arm_angle_time, label='Left Arm Angle', color='blue')
