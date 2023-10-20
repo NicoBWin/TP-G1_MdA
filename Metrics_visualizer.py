@@ -25,17 +25,31 @@ for i in range(3):
 
 
 window_size = 10
+
 # Create the third graph with a 2x2 layout
 fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 6))
 colors = ['blue', 'green', 'red', 'purple']
 
-
+# Each graph 
+# FIRST PLOT
 axes[0, 0].plot(time, moving_avg(data_lists[0], window_size), color=colors[0], label="Smoothed"+data_labels[0])
 axes[0, 0].set_title(data_labels[0])
+
+# SECOND PLOT
 axes[0, 1].plot(time, moving_avg(data_lists[1], window_size), color=colors[1], label="Smoothed"+data_labels[1])
 axes[0, 1].set_title(data_labels[1])
+
+# THIRD PLOT
 axes[1, 0].plot(time, moving_avg(data_lists[2], window_size), color=colors[2], label="Smoothed"+data_labels[2])
 axes[1, 0].set_title(data_labels[2])
+
+# FOURTH PLOT -> Text to show accuracy
+text_kwargs = dict(ha='center', va='center', fontsize=28, color='C1')
+acc = 5
+text = "Global Accuracy: "
+text2show = text + str(acc) + '%'
+axes[1, 1].text(0.5, 0.5, text2show , **text_kwargs) #Understand how it works
+
 
 # Adjust layout
 plt.tight_layout()
