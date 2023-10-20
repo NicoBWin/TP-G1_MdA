@@ -31,11 +31,11 @@ colors = ['blue', 'green', 'red', 'purple']
 
 
 axes[0, 0].plot(time, moving_avg(data_lists[0], window_size), color=colors[0], label="Smoothed"+data_labels[0])
-axes[0, 0].set_title('Axis [0, 0]')
+axes[0, 0].set_title(data_labels[0])
 axes[0, 1].plot(time, moving_avg(data_lists[1], window_size), color=colors[1], label="Smoothed"+data_labels[1])
-axes[0, 1].set_title('Axis [0, 1]')
+axes[0, 1].set_title(data_labels[1])
 axes[1, 0].plot(time, moving_avg(data_lists[2], window_size), color=colors[2], label="Smoothed"+data_labels[2])
-axes[1, 0].set_title('Axis [1, 0]')
+axes[1, 0].set_title(data_labels[2])
 
 # Adjust layout
 plt.tight_layout()
