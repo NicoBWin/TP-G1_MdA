@@ -24,22 +24,22 @@ def calculate_angle(a,b,c):
         
     return angle
 
-# Video Capture source (If 0 -> computer camera)
+# Video Capture source (If 0 -> computer camera)################
 cap = cv2.VideoCapture('OneServe3.mp4')
+################################################################
 
 # Curl counter variables
 counter = 0 
 stage = None
 
 ## Variables for angle graphs
-left_arm_angle_time = []
 right_arm_angle_time = []
+full_body_angle_time = []
 left_leg_angle_time = []
-right_leg_angle_time = []
 time = []
 
 ## Setup mediapipe instance
-with mp_pose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6) as pose:
+with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
     while cap.isOpened():
         try:
             ret, frame = cap.read()
@@ -76,60 +76,31 @@ with mp_pose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6) as 
             left_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
             left_knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x,landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
             left_ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
-            #print(landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z)
 
             # Calculate angle
-            left_arm_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
             right_arm_angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
+            full_body_angle = calculate_angle(right_wrist, right_hip, right_ankle)
             left_leg_angle = calculate_angle(left_hip, left_knee, left_ankle)
-            right_leg_angle = calculate_angle(right_hip, right_knee, right_ankle)
             
             #Save angle
-            left_arm_angle_time.append(left_arm_angle)
             right_arm_angle_time.append(right_arm_angle)
+            full_body_angle_time.append(full_body_angle)
             left_leg_angle_time.append(left_leg_angle)
-            right_leg_angle_time.append(right_leg_angle)
+
             if len(time) == 0:
                 time.append(0)
             else:
                 time.append(max(time)+1)
-            
-            # Curl counter logic
-            if left_arm_angle > 160:
-                stage = "down"
-            if left_arm_angle < 30 and stage =='down':
-                stage="up"
-                counter +=1
-                print(counter)
                        
         except:
             pass
-        
-        # Render curl counter
-        # Setup status box
-        cv2.rectangle(image, (0,0), (225,73), (245,117,16), -1)
-        
-        # Rep data
-        cv2.putText(image, 'REPS', (15,12), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-        cv2.putText(image, str(counter), 
-                    (10,60), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
-        
-        # Stage data
-        cv2.putText(image, 'STAGE', (65,12), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-        cv2.putText(image, stage, 
-                    (60,60), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
-        
         
         # Render detections
         mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                 mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
                                 mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
-                                 )               
-        
+                                 )        
+
         image = cv2.resize(image, (1280, 720))
         cv2.imshow('Pose Estimation', image)
 
@@ -140,7 +111,7 @@ with mp_pose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6) as 
     cv2.destroyAllWindows()
 
 # Store Data for the subplots
-data_lists = [left_arm_angle_time, right_arm_angle_time, left_leg_angle_time, right_leg_angle_time]
-data_labels = ['Left Arm Angle', 'Right Arm Angle', 'Left Leg Angle', 'Right Leg Angle']
+data_lists = [right_arm_angle_time, full_body_angle_time, left_leg_angle_time]
+data_labels = ['Right Arm Angle', 'Full Body Angle', 'Left Leg Angle']
 dfW = pd.DataFrame(dict(zip(data_labels, data_lists))) # create pandas dataframe
-dfW.to_csv('Data.csv')
+dfW.to_csv('Jugador3.csv')
