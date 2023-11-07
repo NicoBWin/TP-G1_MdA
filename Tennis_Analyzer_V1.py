@@ -131,7 +131,7 @@ def get_user_video(name):
                                     mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
                                     )        
 
-            image = cv2.resize(image, (1280, 720))
+            #image = cv2.resize(image, (1280, 720))
             cv2.imshow('Pose Estimation', image)
 
             if cv2.waitKey(10) & 0xFF == ord('q'):
@@ -295,9 +295,9 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body):
 #######################################################################
 #######################################################################
 print("0")
-get_user_video('OneServe2.mp4')
+get_user_video('Videos_Equipo/nico3-30gr-malo.mp4')
 print("1")
-pro_data = get_player_data('Jugador.csv')
+pro_data = get_player_data('PRO_Right_Side.csv')
 print("2")
 user_data = get_player_data('User_Data.csv')
 print("3")

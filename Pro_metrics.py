@@ -25,7 +25,7 @@ def calculate_angle(a,b,c):
     return angle
 
 # Video Capture source (If 0 -> computer camera)################
-cap = cv2.VideoCapture('OneServe3.mp4')
+cap = cv2.VideoCapture('OneServe2.mp4')
 ################################################################
 
 # Curl counter variables
@@ -114,4 +114,4 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
 data_lists = [right_arm_angle_time, full_body_angle_time, left_leg_angle_time]
 data_labels = ['Right Arm Angle', 'Full Body Angle', 'Left Leg Angle']
 dfW = pd.DataFrame(dict(zip(data_labels, data_lists))) # create pandas dataframe
-dfW.to_csv('Jugador3.csv')
+dfW.to_csv('PRO_Right_Side.csv')
