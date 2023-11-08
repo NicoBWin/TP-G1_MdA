@@ -5,6 +5,32 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from dtaidistance import dtw_visualisation as dtwvis
 from dtaidistance import dtw
+import tkinter as tk
+from tkinter import filedialog
+################################################################
+
+################################################################
+## Obtain Path to video ########################################
+################################################################
+def get_video_name():
+    # Create a root window (hidden)
+    root = tk.Tk()
+    root.withdraw()
+
+    # Open a file dialog
+    file_path = filedialog.askopenfilename()
+
+    # Check if a file was selected
+    valid = False
+    if file_path[-3:] == "mp4" or file_path[-3:] == "MOV":
+        print(f"Selected file: {file_path}")
+        valid = True
+    else:
+        print("Error: Incorrect File Type Selected")
+
+    # Remember to destroy the root window
+    root.destroy()
+    return valid, file_path
 ################################################################
 
 ## Low Pass filter #############################################
@@ -51,7 +77,7 @@ def get_player_data(csv_name):
 ################################################################
 ### Obtain user video ##########################################
 ################################################################
-def get_user_video(name):
+def get_user_video(name, resize):
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
     # Video Capture source (If 0 -> computer camera)################
@@ -131,7 +157,8 @@ def get_user_video(name):
                                     mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
                                     )        
 
-            #image = cv2.resize(image, (1280, 720))
+            if resize:
+                image = cv2.resize(image, (1280, 720))
             cv2.imshow('Pose Estimation', image)
 
             if cv2.waitKey(10) & 0xFF == ord('q'):
@@ -221,7 +248,7 @@ def obtain_score(path_list):
 #################################################################
 ###  Plot graphs for DTW between tennist and print final score ##
 #################################################################
-def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body):
+def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, video_path, show_path=False):
 
     fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 6))
     colors = ['blue', 'red']
@@ -229,7 +256,10 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body):
 
     # Main Title
     title_kwargs = dict(ha='center', fontsize=20, color='k')
-    fig.suptitle('Compare Metrics', **title_kwargs)
+    extra_text = ""
+    if show_path:
+        extra_text += "\n" + video_path
+    fig.suptitle('Compare Metrics' + extra_text, **title_kwargs)
 
     ## Each graph 
     # FIRST PLOT
@@ -294,19 +324,20 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body):
     return
 #######################################################################
 #######################################################################
-print("0")
-get_user_video('Videos_Equipo/ale1-0gr.mp4')
-print("1")
-pro_data = get_player_data('PRO_Right_Side.csv')
-print("2")
-user_data = get_player_data('User_Data.csv')
-print("3")
-data = get_dataframe(pro_data, user_data)
-print("4")
-smoothed_data = smooth_data(data, window_size=10)
-print("5")
-paths = get_paths(smoothed_data)
-print("6")
-score_list = obtain_score(get_paths(smoothed_data))
-print("7")
-graph_paths(smoothed_data, paths[0], paths[1], paths[2])
+
+#######################################################################
+###########################      MAIN      ############################
+#######################################################################
+
+valid = False
+
+valid, video_path = get_video_name()
+if valid:
+    get_user_video(video_path, resize=True)
+    pro_data = get_player_data('PRO_Right_Side.csv')
+    user_data = get_player_data('User_Data.csv')
+    data = get_dataframe(pro_data, user_data)
+    smoothed_data = smooth_data(data, window_size=10)
+    paths = get_paths(smoothed_data)
+    score_list = obtain_score(get_paths(smoothed_data))
+    graph_paths(smoothed_data, paths[0], paths[1], paths[2], video_path, show_path=True)
