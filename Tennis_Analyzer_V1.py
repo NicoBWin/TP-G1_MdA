@@ -295,7 +295,7 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body):
 #######################################################################
 #######################################################################
 print("0")
-get_user_video('Videos_Equipo/nico3-30gr-malo.mp4')
+get_user_video('Videos_Equipo/ale1-0gr.mp4')
 print("1")
 pro_data = get_player_data('PRO_Right_Side.csv')
 print("2")
