@@ -249,7 +249,7 @@ def obtain_score(path_list):
 #################################################################
 ###  Plot graphs for DTW between tennist and print final score ##
 #################################################################
-def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, video_path, show_path=False):
+def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, video_path, show_path=False, save_fig=False):
 
     fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 6))
     colors = ['blue', 'red']
@@ -259,7 +259,7 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, vi
     title_kwargs = dict(ha='center', fontsize=20, color='k')
     extra_text = ""
     if show_path:
-        extra_text += "\n" + video_path
+        extra_text += "\n" + "File: " + os.path.basename(video_path)
     fig.suptitle('Compare Metrics' + extra_text, **title_kwargs)
 
     ## Each graph 
@@ -321,7 +321,16 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, vi
     ax[3, 1].spines['left'].set_visible(False)
 
     fig.tight_layout()
-    plt.show()
+    if save_fig:
+        # Save the figure as a PNG with a different name
+        filename = os.path.basename(video_path) 
+        plt.savefig(filename[:-4] + ".png")
+        
+        # Close the current figure to release resources
+        plt.close()
+        print("Saved fig as ", filename[:-4] + ".png")
+    else:
+        plt.show()
     return
 #######################################################################
 #######################################################################
@@ -330,16 +339,33 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, vi
 ###########################      MAIN      ############################
 #######################################################################
 
+def list_files_in_folder(folder_path):
+    file_paths = []
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+    return file_paths
 
-valid = False
 
-valid, video_path = get_video_name()
-if valid:
-    get_user_video(video_path, resize=True)
-    pro_data = get_player_data('PRO_Right_Side.csv')
-    user_data = get_player_data('User_Data.csv')
-    data = get_dataframe(pro_data, user_data)
-    smoothed_data = smooth_data(data, window_size=10)
-    paths = get_paths(smoothed_data)
-    score_list = obtain_score(get_paths(smoothed_data))
-    graph_paths(smoothed_data, paths[0], paths[1], paths[2], video_path, show_path=True)
+
+#valid = False
+
+#valid, video_path = get_video_name()
+folder_path = "C:/Users/HP/Documents/GitHub/TP-G1_MdA/Videos_Equipo/Right"
+file_paths = list_files_in_folder(folder_path)
+for video_path in file_paths:
+    try:
+        print("Now Scoring: ", os.path.basename(video_path))
+        get_user_video(video_path, resize=True)
+        pro_data = get_player_data('PRO_Right_Side.csv')
+        user_data = get_player_data('User_Data.csv')
+        data = get_dataframe(pro_data, user_data)
+        smoothed_data = smooth_data(data, window_size=10)
+        paths = get_paths(smoothed_data)
+        score_list = obtain_score(get_paths(smoothed_data))
+        graph_paths(smoothed_data, paths[0], paths[1], paths[2], video_path, show_path=True, save_fig=True)
+    except:
+        print("Error! Could not score: ", os.path.basename(video_path))
+        pass
+
+print("Finished scoring :)")
