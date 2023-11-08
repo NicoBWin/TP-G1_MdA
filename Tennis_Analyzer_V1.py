@@ -1,3 +1,6 @@
+################################################################
+## Bibliotecas  ################################################
+################################################################
 import numpy as np
 import cv2
 import mediapipe as mp
@@ -9,9 +12,8 @@ import tkinter as tk
 from tkinter import filedialog
 ################################################################
 
-################################################################
+
 ## Obtain Path to video ########################################
-################################################################
 def get_video_name():
     # Create a root window (hidden)
     root = tk.Tk()
@@ -31,7 +33,7 @@ def get_video_name():
     # Remember to destroy the root window
     root.destroy()
     return valid, file_path
-################################################################
+
 
 ## Low Pass filter #############################################
 window_size = 10  # Adjust this to your desired window size
@@ -43,9 +45,9 @@ def smooth_data(data, window_size):
     for column in columns_to_smooth:
         smoothed_data[column] = smoothed_data[column].rolling(window=window_size, min_periods=1).mean()
     return smoothed_data
-################################################################
+
+
 ## Calculate angle between to XY points ########################
-################################################################
 def calculate_angle(a,b,c):
     a = np.array(a) # First
     b = np.array(b) # Mid
@@ -59,9 +61,8 @@ def calculate_angle(a,b,c):
         
     return angle
 
-################################################################
+
 ### Obtain player (pro or user) data in list format ############
-################################################################
 def get_player_data(csv_name):
     # Read the CSV file into a pandas DataFrame
     df = pd.read_csv(csv_name)
@@ -158,7 +159,8 @@ def get_user_video(name, resize):
                                     )        
 
             if resize:
-                image = cv2.resize(image, (1280, 720))
+                #image = cv2.resize(image, (1280, 720))
+                image = cv2.resize(image, (500, 650))
             cv2.imshow('Pose Estimation', image)
 
             if cv2.waitKey(10) & 0xFF == ord('q'):
@@ -172,6 +174,7 @@ def get_user_video(name, resize):
     data_labels = ['Right Arm Angle', 'Full Body Angle', 'Left Leg Angle']
     dfW = pd.DataFrame(dict(zip(data_labels, data_lists))) # create pandas dataframe
     dfW.to_csv('User_Data.csv')
+################################################################
 
 ################################################################
 ### Get a joint dataframe from pro and user data in list form ##
@@ -199,7 +202,6 @@ def get_dataframe(pro_data, user_data):
     # Print the DataFrame
     return df
 #######################################################################
-#######################################################################
 
 ################################################################
 ### Get Dynamic Time Warping list for each component          ##
@@ -212,8 +214,7 @@ def get_paths(smoothed_data):
     path_full_body = dtw.warping_path(smoothed_data.loc[smoothed_data['Tennist'] == 'Pro', 'Full Body Angle'].tolist(),
                                     smoothed_data.loc[smoothed_data['Tennist'] == 'User', 'Full Body Angle'].tolist())
     return [path_right_arm, path_left_leg, path_full_body]
-#######################################################################
-#######################################################################
+################################################################
 
 #########################################################################
 ###  Obtain score by normalizing distance of movements between tennists##
@@ -242,7 +243,6 @@ def obtain_score(path_list):
         #print("")
         score_list.append(normalized_avg_distance)
     return score_list
-#######################################################################
 #######################################################################
 
 #################################################################
@@ -323,12 +323,10 @@ def graph_paths(smoothed_data, path_right_arm, path_left_leg, path_full_body, vi
     plt.show()
     return
 #######################################################################
-#######################################################################
 
 #######################################################################
 ###########################      MAIN      ############################
 #######################################################################
-
 valid = False
 
 valid, video_path = get_video_name()
